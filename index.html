@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Flashcard Economia</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f7fb;
+    margin:0;
+    padding:20px;
+}
+
+.container{
+    max-width:800px;
+    margin:auto;
+}
+
+h1{
+    text-align:center;
+    color:#1f4e79;
+}
+
+.progress{
+    text-align:center;
+    margin-bottom:15px;
+    font-weight:bold;
+}
+
+.card{
+    height:350px;
+    perspective:1000px;
+    cursor:pointer;
+}
+
+.card-inner{
+    position:relative;
+    width:100%;
+    height:100%;
+    transition:transform .6s;
+    transform-style:preserve-3d;
+}
+
+.card.flip .card-inner{
+    transform:rotateY(180deg);
+}
+
+.front, .back{
+    position:absolute;
+    width:100%;
+    height:100%;
+    backface-visibility:hidden;
+    border-radius:15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:25px;
+    box-sizing:border-box;
+    font-size:1.4rem;
+    box-shadow:0 4px 15px rgba(0,0,0,.15);
+}
+
+.front{
+    background:white;
+    color:#1f4e79;
+}
+
+.back{
+    background:#1f4e79;
+    color:white;
+    transform:rotateY(180deg);
+}
+
+.controls{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-top:20px;
+    flex-wrap:wrap;
+}
+
+button{
+    padding:12px 18px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:#1f4e79;
+    color:white;
+}
+
+button:hover{
+    background:#163954;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Flashcard Economia</h1>
+
+<div class="progress" id="counter"></div>
+
+<div class="card" id="card">
+<div class="card-inner">
+
+<div class="front" id="front"></div>
+
+<div class="back" id="back"></div>
+
+</div>
+</div>
+
+<div class="controls">
+<button onclick="prevCard()">⬅ Indietro</button>
+<button onclick="flipCard()">🔄 Gira</button>
+<button onclick="nextCard()">Avanti ➡</button>
+<button onclick="shuffleCards()">🎲 Casuale</button>
+</div>
+
+</div>
+
+<script>
+
+let cards = [
+
+{
+front:"Che cosa studia l'economia?",
+back:"L'economia studia le leggi che collegano i fenomeni economici."
+},
+
+{
+front:"Perché l'economia è una scienza sociale?",
+back:"Perché studia il comportamento delle persone, che è difficile da prevedere."
+},
+
+{
+front:"Che cos'è un modello economico?",
+back:"Una rappresentazione semplificata della realtà."
+},
+
+{
+front:"Cosa significa 'ceteris paribus'?",
+back:"A parità di altre condizioni."
+},
+
+{
+front:"Differenza tra metodo induttivo e deduttivo?",
+back:"Induttivo: dai fatti alla legge. Deduttivo: da principi generali a conclusioni particolari."
+},
+
+{
+front:"Che cos'è la microeconomia?",
+back:"Studia il comportamento del singolo soggetto economico."
+},
+
+{
+front:"Che cos'è la macroeconomia?",
+back:"Studia i fenomeni economici nel loro insieme."
+},
+
+{
+front:"Quali sono i fenomeni economici fondamentali?",
+back:"Produzione, distribuzione, lavoro, consumo e scambio."
+},
+
+{
+front:"Cos'è la produzione?",
+back:"Trasformazione di beni e servizi in altri beni e servizi."
+},
+
+{
+front:"Cosa sono i fattori produttivi?",
+back:"Natura, lavoro e capitale."
+},
+
+{
+front:"Quali sono i tipi di lavoro?",
+back:"Manuale, intellettuale e professionale."
+},
+
+{
+front:"Cos'è il capitale fisso?",
+back:"Macchinari e impianti usati più volte."
+},
+
+{
+front:"Cos'è il capitale variabile?",
+back:"Materie prime utilizzate una sola volta."
+},
+
+{
+front:"Chi è l'imprenditore?",
+back:"Chi organizza professionalmente la produzione o lo scambio di beni e servizi."
+},
+
+{
+front:"Formula del profitto?",
+back:"Profitto = Ricavi - Costi."
+},
+
+{
+front:"Quali sono i settori produttivi?",
+back:"Primario, secondario, terziario e terziario avanzato."
+},
+
+{
+front:"Cos'è la distribuzione commerciale?",
+back:"L'attività che porta i prodotti sul mercato."
+},
+
+{
+front:"Chi è il grossista?",
+back:"Acquista grandi quantità e rivende ai dettaglianti."
+},
+
+{
+front:"Cos'è il consumo?",
+back:"Uso di beni e servizi per soddisfare bisogni."
+},
+
+{
+front:"Cos'è il consumismo?",
+back:"Acquistare più del necessario, spesso influenzati dalla pubblicità."
+},
+
+{
+front:"Che cos'è lo scambio?",
+back:"Ottenere beni o servizi dando in cambio altri beni o denaro."
+},
+
+{
+front:"Cos'è la moneta?",
+back:"Un bene accettato da tutti come mezzo di pagamento e di scambio."
+},
+
+{
+front:"Cos'è il reddito?",
+back:"La remunerazione dei fattori produttivi."
+},
+
+{
+front:"Quali sono le principali fonti di reddito?",
+back:"Salario, stipendio, rendita, interesse e profitto."
+},
+
+{
+front:"Differenza tra reddito e patrimonio?",
+back:"Il reddito è un flusso; il patrimonio è uno stock."
+},
+
+{
+front:"Cos'è il risparmio?",
+back:"La parte di reddito non consumata."
+},
+
+{
+front:"Cos'è l'investimento?",
+back:"L'utilizzo del risparmio nelle attività produttive."
+},
+
+{
+front:"Cos'è il tesoreggiamento?",
+back:"Conservare il risparmio senza investirlo."
+},
+
+{
+front:"Quali sono i soggetti economici?",
+back:"Famiglie, imprese, Stato e resto del mondo."
+},
+
+{
+front:"Cos'è un flusso reale?",
+back:"Movimento di beni e servizi."
+},
+
+{
+front:"Cos'è un flusso monetario?",
+back:"Movimento di denaro."
+},
+
+{
+front:"Cosa sono i tributi?",
+back:"Imposte, tasse e contributi sociali."
+},
+
+{
+front:"Cos'è un'esportazione?",
+back:"Vendita di beni e servizi all'estero."
+},
+
+{
+front:"Cos'è un'importazione?",
+back:"Acquisto di beni e servizi dall'estero."
+},
+
+{
+front:"Cos'è il principio del tornaconto?",
+back:"Minimo mezzo o massimo risultato."
+},
+
+{
+front:"Cos'è il principio edonistico?",
+back:"Ricerca del massimo piacere individuale."
+},
+
+{
+front:"Chi era Adam Smith?",
+back:"Economista che evidenziò il ruolo dell'interesse individuale nell'economia."
+},
+
+{
+front:"Che cos'è l'allocazione delle risorse?",
+back:"La scelta su come utilizzare risorse scarse."
+},
+
+{
+front:"Quali sono le tre domande economiche fondamentali?",
+back:"Che cosa produrre, come produrre, per chi produrre."
+}
+
+];
+
+let current=0;
+
+function showCard(){
+    document.getElementById('front').innerHTML=cards[current].front;
+    document.getElementById('back').innerHTML=cards[current].back;
+    document.getElementById('counter').innerHTML=
+      "Flashcard "+(current+1)+" di "+cards.length;
+
+    document.getElementById('card').classList.remove('flip');
+}
+
+function flipCard(){
+    document.getElementById('card').classList.toggle('flip');
+}
+
+function nextCard(){
+    current=(current+1)%cards.length;
+    showCard();
+}
+
+function prevCard(){
+    current=(current-1+cards.length)%cards.length;
+    showCard();
+}
+
+function shuffleCards(){
+    cards.sort(()=>Math.random()-0.5);
+    current=0;
+    showCard();
+}
+
+document.getElementById('card')
+.addEventListener('click',flipCard);
+
+showCard();
+
+</script>
+
+</body>
+</html>
